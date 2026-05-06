@@ -1,5 +1,4 @@
 import Fastify, { FastifyServerOptions } from 'fastify';
-import 123;
 
 export function buildApp(options: FastifyServerOptions = {}) {
   const app = Fastify({
