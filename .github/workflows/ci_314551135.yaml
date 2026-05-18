@@ -1,15 +1,42 @@
-name: Super Simple Test
+name: CI Pipeline
 
+# pipeline 需要在 push 時自動執行
 on:
   push:
+    branches: [ "**" ]
 
 jobs:
-  my-first-job:
+  build-and-test:
     runs-on: ubuntu-latest
-    
-    steps:
-      - name: Say Hello
-        run: echo "這是一個超簡單的測試任務！"
 
-      - name: Check Node Version
-        run: node -v
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # 依據專案需求可調整版本
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # 1. TypeScript typecheck
+      - name: TypeScript typecheck
+        run: npx tsc --noEmit
+
+      # 2. Prettier check
+      - name: Prettier check
+        run: npx prettier --check .
+
+      # 3. Test (搭配產生 junit 報表)
+      - name: Run tests
+        run: npx vitest run --reporter=junit --outputFile=test-results.xml
+
+      # 4. 將測試結果顯示於 GitHub actions 結果頁面
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always() # 確保即使測試失敗也能產出報表
+        with:
+          files: test-results.xml
