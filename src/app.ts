@@ -23,4 +23,4 @@ export function buildApp(options: FastifyServerOptions = {}) {
 }
 
 //random error added in my codebase
-const myNumber: number = "This is a string";
+// const myNumber: number = "This is a string";
